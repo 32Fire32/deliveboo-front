@@ -48,6 +48,7 @@ export default {
         })
         .then((response) => {
           store.userCart = [];
+          console.log(store.userCart);
           localStorage.clear();
         })
         .catch((err) => { });
