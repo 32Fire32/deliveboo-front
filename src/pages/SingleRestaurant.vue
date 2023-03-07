@@ -40,11 +40,7 @@
                   <div
                     :style="`background-image: url(${dish.img});background-color: black; background-size:cover; background-position:center; background-repeat: no-repeat;  background-color: white;`"
                   >
-                    <!-- <img
-                      class="img-fluid img-1 object-fit-fill"
-                      :src="dish.img"
-                      alt=""
-                    /> -->
+
                   </div>
                 </article>
                 <div class="d-flex flex-column">
@@ -61,14 +57,6 @@
             </div>
 
             <!-- tasto carrello -->
-
-            <!-- <div id="modifying" class="d-none"><p>Attenzione stai creando un nuovo carrello!</p></div> -->
-
-            <!-- <router-link
-                    class="text-decoration-none text-white btn rounded-3"
-                    :to="{ name: 'checkout' }"
-                    >Vai al Carrello</router-link
-                  > -->
 
             <!-- modale -->
             <div
