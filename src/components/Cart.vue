@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       store,
+      cart:[],
       rest: null,
       restaurant_slug: null,
       restaurant: null,
@@ -31,14 +32,18 @@ export default {
     };
   },
   created() {
-    store.userCart = JSON.parse(localStorage.getItem("my_data"));
 
+    store.userCart = JSON.parse(localStorage.getItem("my_data"));
     this.restaurant_slug = JSON.parse(localStorage.getItem("slug"));
     this.rest = JSON.parse(localStorage.getItem("price_shipping"));
+    this.cart = store.userCart;
+    console.log(store.userCart);
+    console.log(this.cart);
+
   },
   mounted() {
 
-    if(store.userCart){
+    if(this.cart){
       document.getElementById('card-number').addEventListener('input', function (e) {
       e.target.value = e.target.value.replace(/[^\dA-Z]/g, '').replace(/(.{4})/g, '$1 ').trim();
     });
@@ -49,8 +54,8 @@ export default {
     }   
 
     //calcolo prezzo totale
-    if (store.userCart) {
-      for (let i = 0; i < store.userCart.dish.length; i++) {
+    if (this.cart) {
+      for (let i = 0; i < this.cart.dish.length; i++) {
         this.totalPrice.push(
           parseFloat(document.querySelector(`#price-${i}`).innerHTML)
         );
@@ -76,7 +81,7 @@ export default {
       // console.log(store.userCart.dish)
 
       // id piatti
-      const ids = store.userCart.dish.map((element) => element.id);
+      const ids = this.cart.dish.map((element) => element.id);
       this.cartItems.dishesId = ids;
       // console.log(this.dishesId)
     }
@@ -99,7 +104,9 @@ export default {
         })
         .then((response) => {
           store.userCart = [];
+          this.cart=[]; //forse
           console.log(store.userCart);
+          console.log(this.cart);
           localStorage.clear();
         })
         .catch((err) => { });
@@ -173,7 +180,7 @@ export default {
       if (this.cartItems.dishesQuantity.length > 0) {
         this.cartItems.dishesQuantity = [];
       } else {
-        store.userCart.dish.forEach((element, i) => {
+        this.cart.dish.forEach((element, i) => {
           this.cartItems.dishesQuantity.push(
             parseFloat(document.querySelector(`#quantity-${i}`).value)
           );
@@ -188,19 +195,25 @@ export default {
 
     },
     deleteCart(i) {
-      store.userCart.dish.splice(i, 1);
+      this.cart.dish.splice(i, 1);
 
       localStorage.removeItem('my_data')
 
-      localStorage.setItem('my_data', JSON.stringify(store.userCart));
+      localStorage.setItem('my_data', JSON.stringify(this.cart));
 
 
-      if (store.userCart.dish.length === 0) {
+      if (this.cart.dish.length === 0) {
         localStorage.clear();
 
       }
-      this.$router.go(0);
     },
+
+    deleteAll(){
+      this.cart.dish = [];
+      store.userCart.dish = [];
+      // localStorage.removeItem('my_data')
+      localStorage.clear();
+    }
   },
 };
 </script>
@@ -215,25 +228,25 @@ export default {
               <div>
                 <h2 class="my-2 title">{{ this.rest.name }}</h2>
               </div>
-              <div v-if="store.userCart.dish.length > 1">
+              <div v-if="this.cart.dish.length > 1">
                 <h5 class="mb-0 title">
-                  Carrello - {{ store.userCart.dish.length }} prodotti
+                  Carrello - {{ this.cart.dish.length }} prodotti
                   selezionati
                 </h5>
               </div>
-              <div v-else-if="store.userCart.dish.length == 1">
+              <div v-else-if="this.cart.dish.length == 1">
                 <h5 class="mb-0 title">
-                  Carrello - {{ store.userCart.dish.length }} prodotto
+                  Carrello - {{ this.cart.dish.length }} prodotto
                   selezionato
                 </h5>
               </div>
-              <div v-else-if="store.userCart.dish.length == 0">
+              <div v-else-if="this.cart.dish.length == 0">
                 <h5 class="mb-0">Carrello - nessun prodotto selezionato</h5>
               </div>
             </div>
             <div class="card-body">
               <!-- PRODOTTO -->
-              <div class="row" v-for="(item, index) in store.userCart.dish">
+              <div class="row" v-for="(item, index) in this.cart.dish">
                 <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
                   <!-- IMMAGINE -->
                   <div>
@@ -279,7 +292,7 @@ export default {
                     Elimina
                   </button>
                 </div>
-                <div v-if="index != store.userCart.dish.length - 1">
+                <div v-if="index != this.cart.dish.length - 1">
                   <hr class="mb-4" />
                 </div>
               </div>
@@ -332,7 +345,7 @@ export default {
                 data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" @click="getQuantities">
                 Vai all'ordine
               </button>
-              <button class="btn btn-quantity" @click="deleteCart()">Vai al carrello</button>
+              <button class="btn btn-quantity ms-2" @click="deleteAll()">Svuota carrello</button>
 
               <div class="modal modal-lg fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
@@ -415,14 +428,7 @@ export default {
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             Chiudi
                           </button>
-                          <!-- <button type="submit" class="btn btn-delete">
-                                    <router-link
-                                    class="text-decoration-none text"
-                                    :to="{ name: 'ordine' }"
-                                    >
-                                    Conferma ordine
-                                </router-link>
-                            </button> -->
+                        
                         </div>
                       </form>
                     </div>
