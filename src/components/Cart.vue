@@ -211,6 +211,7 @@ export default {
     deleteAll(){
       this.cart.dish = [];
       store.userCart.dish = [];
+      console.log(this.cart.dish.length)
       // localStorage.removeItem('my_data')
       localStorage.clear();
     }
@@ -225,7 +226,7 @@ export default {
         <div v-if="store.userCart" class="col-md-8">
           <div class="card my-card mb-4">
             <div class="card-header py-3" style="background: rgb(253, 187, 45)">
-              <div>
+              <div v-if="this.cart.dish.length > 0">
                 <h2 class="my-2 title">{{ this.rest.name }}</h2>
               </div>
               <div v-if="this.cart.dish.length > 1">
@@ -306,8 +307,8 @@ export default {
 
         <!-- RIEPILOGO ORDINE -->
         <div v-if="store.userCart" class="col-md-4">
-          <div class="card mb-4 my-card">
-            <div class="card-header py-3" style="background: rgb(253, 187, 45)">
+          <div v-if="this.cart.dish.length > 0" class="card mb-4 my-card">
+            <div  class="card-header py-3" style="background: rgb(253, 187, 45)">
               <h5 class="mb-0 title">Riepilogo ordine</h5>
             </div>
             <div class="card-body">
