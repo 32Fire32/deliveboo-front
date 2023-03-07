@@ -244,12 +244,6 @@ li:hover span {
     float: none;
   }
 
-  nav ul li a {
-    // padding: 15px;
-    // line-height: 20px;
-    // padding-left: 25%;
-  }
-
   nav ul li ul li a {
     padding-left: 30%;
   }

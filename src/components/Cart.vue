@@ -30,6 +30,57 @@ export default {
       shipping: "",
     };
   },
+  created() {
+    store.userCart = JSON.parse(localStorage.getItem("my_data"));
+
+    this.restaurant_slug = JSON.parse(localStorage.getItem("slug"));
+    this.rest = JSON.parse(localStorage.getItem("price_shipping"));
+  },
+  mounted() {
+
+    if(store.userCart){
+      document.getElementById('card-number').addEventListener('input', function (e) {
+      e.target.value = e.target.value.replace(/[^\dA-Z]/g, '').replace(/(.{4})/g, '$1 ').trim();
+    });
+
+    document.getElementById('expiration-date').addEventListener('input', function (e) {
+      e.target.value = e.target.value.replace(/[^\dA-Z]/g, '').replace(/(.{2})/g, '$1 ').trim();
+    });
+    }   
+
+    //calcolo prezzo totale
+    if (store.userCart) {
+      for (let i = 0; i < store.userCart.dish.length; i++) {
+        this.totalPrice.push(
+          parseFloat(document.querySelector(`#price-${i}`).innerHTML)
+        );
+      }
+      this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
+
+      // data locale
+      const date = new Date();
+      const formattedDate = date
+        .toISOString()
+        .replace(/T/, " ")
+        .replace(/\..+/, "");
+      this.orderData.order_date = formattedDate.toLocaleString();
+
+      // codice random
+      const min = 10000;
+      const max = 99999;
+      this.orderData.code = Math.floor(Math.random() * (max - min + 1)) + min;
+
+      //prezzo totale
+      this.shipping = parseFloat(document.getElementById("price").innerHTML);
+      this.orderData.price = this.shipping + this.subtotal;
+      // console.log(store.userCart.dish)
+
+      // id piatti
+      const ids = store.userCart.dish.map((element) => element.id);
+      this.cartItems.dishesId = ids;
+      // console.log(this.dishesId)
+    }
+  },
   methods: {
     addNewOrder() {
       axios
@@ -63,22 +114,11 @@ export default {
       }
       console.log(this.cartItems.dishesQuantity);
     },
-    // addZeroToNumber(num) {
-    //     if (num != undefined) {
-    //         if (num.toString().includes(".")) {
-    //             return num+"0"
-    //         } else return num+".00"
-    //     }
-    // },
+
     pushPriceInArray(item) {
       this.orderTotal.push(item);
     },
-    // orderTotalPrice() {
-    //     if (this.orderTotal.length != 0)
-    //     return this.orderTotal.reduce(function(a, b){
-    //         return a + b;
-    //     })
-    // },
+ 
     QuantityUp(i, price) {
       let oldPrice = price;
       // CALCOLO QUANTITA' / PREZZO
@@ -121,7 +161,6 @@ export default {
         this.totalPrice[i] -= parseFloat(oldPrice);
         this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
         this.orderData.price = this.shipping + this.subtotal;
-        // console.log(this.orderData.price)
       }
 
       if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
@@ -162,67 +201,6 @@ export default {
       }
       this.$router.go(0);
     },
-  },
-  // computed: {
-  //     getQuantities() {
-  //                 for (let i = 0; i < store.userCart.dish.length; i++) {
-
-  //                     this.cartItems.dishesQuantity.push(parseFloat(document.querySelector(`#quantity-${i}`).value))
-  //                 console.log(this.cartItems.dishesQuantity)
-
-  //                 }
-  //     },
-  // },
-  created() {
-    store.userCart = JSON.parse(localStorage.getItem("my_data"));
-
-    this.restaurant_slug = JSON.parse(localStorage.getItem("slug"));
-    this.rest = JSON.parse(localStorage.getItem("price_shipping"));
-  },
-  mounted() {
-    if(store.userCart){
-      document.getElementById('card-number').addEventListener('input', function (e) {
-      e.target.value = e.target.value.replace(/[^\dA-Z]/g, '').replace(/(.{4})/g, '$1 ').trim();
-    });
-
-    document.getElementById('expiration-date').addEventListener('input', function (e) {
-      e.target.value = e.target.value.replace(/[^\dA-Z]/g, '').replace(/(.{2})/g, '$1 ').trim();
-    });
-    }
-    
-
-    //calcolo prezzo totale
-    if (store.userCart) {
-      for (let i = 0; i < store.userCart.dish.length; i++) {
-        this.totalPrice.push(
-          parseFloat(document.querySelector(`#price-${i}`).innerHTML)
-        );
-      }
-      this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
-
-      // data locale
-      const date = new Date();
-      const formattedDate = date
-        .toISOString()
-        .replace(/T/, " ")
-        .replace(/\..+/, "");
-      this.orderData.order_date = formattedDate.toLocaleString();
-
-      // codice random
-      const min = 10000;
-      const max = 99999;
-      this.orderData.code = Math.floor(Math.random() * (max - min + 1)) + min;
-
-      //prezzo totale
-      this.shipping = parseFloat(document.getElementById("price").innerHTML);
-      this.orderData.price = this.shipping + this.subtotal;
-      // console.log(store.userCart.dish)
-
-      // id piatti
-      const ids = store.userCart.dish.map((element) => element.id);
-      this.cartItems.dishesId = ids;
-      // console.log(this.dishesId)
-    }
   },
 };
 </script>
@@ -349,11 +327,12 @@ export default {
                   </span>
                 </li>
               </ul>
-              <!-- <button type="button" class="btn btn-primary btn-lg btn-block">Go to checkout</button> -->
+
               <button type="button" class="btn btn-primary btn-delete border-none" data-bs-toggle="modal"
                 data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" @click="getQuantities">
                 Vai all'ordine
               </button>
+              <button class="btn btn-quantity" @click="deleteCart()">Vai al carrello</button>
 
               <div class="modal modal-lg fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
@@ -465,10 +444,6 @@ section {
 }
 .title {
   color: white;
-}
-
-.empty{
-  
 }
 
 .btn-quantity {
