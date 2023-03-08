@@ -42,8 +42,8 @@
                   </div>
                   
                 </article>
-                <div class="d-flex mb-4 d-none" :id="'btn-quantities-' + index" style="max-width: 300px">
-                    <button class="btn btn-quantity color-white px-3 me-2 mb-5" :id="'down-btn-' + index"
+                <div class="d-flex justify-content-center d-none addbuttons" :id="'btn-quantities-' + index" style="max-width: 300px">
+                    <button class="btn btn-quantity color-white mb-5" :id="'down-btn-' + index"
                       @click="QuantityDown(index)">
                       -
                     </button>
@@ -51,10 +51,9 @@
                     <div class="form-outline">
                       <input :id="'quantity-' + index" required min="1" max="10" :name="'quantity-' + index"
                         type="number" class="form-control" :class="`num-${index}`" value="1"/>
-                      <label class="form-label" :for="'quantity-' + id">Quantità</label>
                     </div>
 
-                    <button class="btn btn-quantity color-white px-3 ms-2 mb-5" :id="'up-btn-' + index"
+                    <button class="btn btn-quantity color-white mb-5" :id="'up-btn-' + index"
                       @click="QuantityUp(index)">
                       +
                     </button>
@@ -316,6 +315,11 @@ export default {
 .selected {
   filter: grayscale(100%) brightness(35%) sepia(100%) hue-rotate(-50deg)
     saturate(700%) contrast(0.8) !important;
+}
+.addbuttons{
+  position: absolute;
+  background-color: rgb(253, 187, 45);
+  padding: 0px 15px;
 }
 .dish-text {
   color: black;
