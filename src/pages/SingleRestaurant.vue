@@ -318,7 +318,6 @@ export default {
 }
 .addbuttons{
   position: absolute;
-  background-color: rgb(253, 187, 45);
   padding: 0px 15px;
 }
 .dish-text {
