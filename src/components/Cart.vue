@@ -42,7 +42,7 @@ export default {
 
     this.cart.quantities.forEach((element, i) => {
       this.quantity.push(parseFloat(this.cart.quantities[i]))
-      console.log(this.quantity)      
+      // console.log(this.quantity)      
     });
 
   },
@@ -133,18 +133,23 @@ export default {
     QuantityUp(i, price) {
       // CALCOLO QUANTITA' / PREZZO
       // document.querySelector(`#quantity-${i}`).stepUp();
-      if(this.quantity[i] >= 0 && this.quantity[i] < 10){
+      if(this.quantity[i] < 10){
         this.quantity[i] += 1;
+        document.querySelector(`#price-${i}`).innerHTML =
+      price * parseFloat(this.quantity[i]);
       }
       
       // if (document.querySelector(`#quantity-${i}`).value <= 10) {
 
       // this.totalPrice.push(parseFloat(price));
-      // this.totalPrice[i] += parseFloat(price)
+      this.totalPrice[i] += parseFloat(price)
+      console.log(this.totalPrice)
       // this.totalPrice.push(price * document.querySelector(`#quantity-${i}`).value);
-      // console.log(this.totalPrice)
-      // this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
-      // this.orderData.price = this.shipping + this.subtotal;
+      if(this.quantity[i] < 10){
+        this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
+        this.orderData.price = this.shipping + this.subtotal;
+      }
+      
 
       // }
 
@@ -156,8 +161,10 @@ export default {
     
     QuantityDown(i, price) {
       // document.querySelector(`#quantity-${i}`).stepDown();
-      if(this.quantity[i] > 0 && this.quantity[i] <= 10){
+      if(this.quantity[i] > 0){
         this.quantity[i] -= 1;
+        document.querySelector(`#price-${i}`).innerHTML =
+      price * parseFloat(this.quantity[i]);
       }
       
 
@@ -170,11 +177,14 @@ export default {
       //   document.querySelector(`#price-${i}`).innerHTML = price;
       // }
       // if (this.totalPrice[i] > price) {
-      //   this.totalPrice[i] -= parseFloat(price);
-      // console.log(this.totalPrice)
+        this.totalPrice[i] -= parseFloat(price);
+        console.log(this.totalPrice)
 
-      //   this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
-      //   this.orderData.price = this.shipping + this.subtotal;
+        if(this.quantity[i] > 0){
+          this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
+          this.orderData.price = this.shipping + this.subtotal;
+        }
+        
       // }
 
       // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
