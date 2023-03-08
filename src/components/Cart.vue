@@ -33,26 +33,28 @@ export default {
     };
   },
   created() {
+      store.userCart = JSON.parse(localStorage.getItem("my_data"));
+      this.restaurant_slug = JSON.parse(localStorage.getItem("slug"));
+      this.rest = JSON.parse(localStorage.getItem("price_shipping"));
+      this.cart = store.userCart;
 
-    store.userCart = JSON.parse(localStorage.getItem("my_data"));
-    this.restaurant_slug = JSON.parse(localStorage.getItem("slug"));
-    this.rest = JSON.parse(localStorage.getItem("price_shipping"));
-    this.cart = store.userCart;
-    // console.log(this.cart.quantities);
-
-    this.cart.quantities.forEach((element, i) => {
-      this.quantity.push(parseFloat(this.cart.quantities[i]))
-      // console.log(this.quantity)      
-    });
+      if(store.userCart){
+          this.cart.quantities.forEach((element, i) => {
+        this.quantity.push(parseFloat(this.cart.quantities[i]))     
+      });
+      }
+      
 
   },
   mounted() {
-    // stampa quantità
-    this.cart.dish.forEach((element, i) => {
-      // console.log(element.price, this.cart.quantities)
-      document.querySelector(`#price-${i}`).innerHTML =
-      element.price * parseFloat(this.cart.quantities[i]);      
-    });
+      // stampa quantità
+      if(store.userCart){
+        this.cart.dish.forEach((element, i) => {
+        document.querySelector(`#price-${i}`).innerHTML =
+        element.price * parseFloat(this.cart.quantities[i]);      
+      });
+      }
+      
 
     //card
     if(this.cart){
@@ -132,20 +134,20 @@ export default {
  
     QuantityUp(i, price) {
       // CALCOLO QUANTITA' / PREZZO
-      // document.querySelector(`#quantity-${i}`).stepUp();
-      if(this.quantity[i] < 10){
+      document.querySelector(`#down-btn-${i}`).disabled = false;
+
+      if(this.quantity[i] <= 10){
         this.quantity[i] += 1;
         document.querySelector(`#price-${i}`).innerHTML =
       price * parseFloat(this.quantity[i]);
       }
       
-      // if (document.querySelector(`#quantity-${i}`).value <= 10) {
-
-      // this.totalPrice.push(parseFloat(price));
-      this.totalPrice[i] += parseFloat(price)
-      console.log(this.totalPrice)
-      // this.totalPrice.push(price * document.querySelector(`#quantity-${i}`).value);
-      if(this.quantity[i] < 10){
+      ;
+      if(this.quantity[i] <= 10){
+        if(this.quantity[i] == 10){
+          document.querySelector(`#up-btn-${i}`).disabled = true;
+        }
+        this.totalPrice[i] += parseFloat(price)
         this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
         this.orderData.price = this.shipping + this.subtotal;
       }
@@ -160,11 +162,12 @@ export default {
     },
     
     QuantityDown(i, price) {
+      document.querySelector(`#up-btn-${i}`).disabled = false;
       // document.querySelector(`#quantity-${i}`).stepDown();
-      if(this.quantity[i] > 0){
+      if(this.quantity[i] > 1){
         this.quantity[i] -= 1;
         document.querySelector(`#price-${i}`).innerHTML =
-      price * parseFloat(this.quantity[i]);
+        price * parseFloat(this.quantity[i]);
       }
       
 
@@ -180,7 +183,10 @@ export default {
         this.totalPrice[i] -= parseFloat(price);
         console.log(this.totalPrice)
 
-        if(this.quantity[i] > 0){
+        if(this.quantity[i] >= 1){
+          if(this.quantity[i] == 1){
+          document.querySelector(`#down-btn-${i}`).disabled = true;
+        }
           this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
           this.orderData.price = this.shipping + this.subtotal;
         }
@@ -330,14 +336,12 @@ export default {
               <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
                   Subtotale
-                  <span id="subtotal">{{ this.subtotal }}<span v-if="this.subtotal.toString().includes('.')">0</span><span
-                      v-else>.00</span>
+                  <span id="subtotal">{{ this.subtotal }}
                     €</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                   Prezzo di consegna
-                  <span>{{ this.rest.price_shipping }}<span
-                      v-if="this.rest.price_shipping.toString().includes('.')">0</span><span v-else>.00</span>
+                  <span>{{ this.rest.price_shipping }}
                     €</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
@@ -348,9 +352,7 @@ export default {
                     </strong>
                   </div>
                   <span>
-                    <strong id="price">{{ parseFloat(this.subtotal) + parseFloat(this.rest.price_shipping) }}<span
-                        v-if="parseFloat(this.subtotal) + parseFloat(this.rest.price_shipping).toString().includes('.')">0</span><span
-                        v-else>.00</span>
+                    <strong id="price">{{ parseFloat(this.subtotal) + parseFloat(this.rest.price_shipping) }}
                       €
                     </strong>
                   </span>
