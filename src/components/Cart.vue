@@ -151,14 +151,6 @@ export default {
         this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
         this.orderData.price = this.shipping + this.subtotal;
       }
-      
-
-      // }
-
-      // AGGIUNGI ZERO ALLA FINE
-      // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
-      //   document.querySelector(`#price-${i}`).innerHTML += "0";
-      // } else document.querySelector(`#price-${i}`).innerHTML += ".00";
     },
     
     QuantityDown(i, price) {
@@ -169,17 +161,6 @@ export default {
         document.querySelector(`#price-${i}`).innerHTML =
         price * parseFloat(this.quantity[i]);
       }
-      
-
-      // CALCOLO QUANTITA' / PREZZO
-
-      // if (parseFloat(document.querySelector(`#price-${i}`).innerHTML) > price) {
-      //   document.querySelector(`#quantity-${i}`).stepDown();
-      //   document.querySelector(`#price-${i}`).innerHTML -= price;
-      // } else {
-      //   document.querySelector(`#price-${i}`).innerHTML = price;
-      // }
-      // if (this.totalPrice[i] > price) {
         this.totalPrice[i] -= parseFloat(price);
         console.log(this.totalPrice)
 
@@ -190,12 +171,6 @@ export default {
           this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
           this.orderData.price = this.shipping + this.subtotal;
         }
-        
-      // }
-
-      // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
-      //   document.querySelector(`#price-${i}`).innerHTML += "0";
-      // } else document.querySelector(`#price-${i}`).innerHTML += ".00";
     },
 
     getQuantities() {
@@ -233,7 +208,6 @@ export default {
       this.cart.dish = [];
       store.userCart.dish = [];
       console.log(this.cart.dish.length)
-      // localStorage.removeItem('my_data')
       localStorage.clear();
     }
   },
@@ -241,12 +215,12 @@ export default {
 </script>
 
 <template>
-  <section class="pt-5">
-    <div class="container pt-5">
+  <section class="pt-2">
+    <div class="container pt-2">
       <div class="row d-flex justify-content-center my-4 my-cart">
         <div v-if="store.userCart" class="col-md-8">
-          <div class="card my-card mb-4">
-            <div class="card-header py-3" style="background: rgb(253, 187, 45)">
+          <div class="card my-card mb-2">
+            <div class="card-header" style="background: rgb(253, 187, 45)">
               <div v-if="this.cart.dish.length > 0">
                 <h2 class="my-2 title">{{ this.rest.name }}</h2>
               </div>

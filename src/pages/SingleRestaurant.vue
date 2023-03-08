@@ -172,19 +172,6 @@ export default {
 
     
   },
-  // computed: {
-  //   dishesQuantity() {
-  //     return this.order.dish.map(dish => this.order.quantities[dish.id])
-  //     for (let i = 0; i < this.order.dish.length; i++) {
-  //         this.order.quantities.push(parseFloat(document.querySelector(`#quantity-${i}`)).value);
-  //       }
-  //   }
-  // },
-  // mounted(){
-  //   for (let i = 0; i < this.order.dish.length; i++) {
-  //         this.quantities.push(parseFloat(document.querySelector(`#quantity-${i}`)).value);
-  //       }
-  // },
   methods: {
     selectDish(i) {
       document.querySelector(`#btn-quantities-${i}`).classList.toggle('d-none');
@@ -286,13 +273,6 @@ export default {
       }
     },
 
-    showlog() {
-      // console.log(store.userCart.dish)
-      console.log(localStorage.getItem("my_data"));
-      console.log(this.order.dish.length);
-      console.log(store.userCart.dish.length);
-    },
-
     disableInput() {
       for (let i = 0; i < this.restaurant.dishes.length; i++) {
         if (document.querySelector(`.check_${i}`).checked === true) {
@@ -304,64 +284,14 @@ export default {
       }
     },
     QuantityUp(i) {
-      // console.log(this.quantities)
-
-      // let oldPrice = price;
-      // CALCOLO QUANTITA' / PREZZO
+  
       document.querySelector(`#quantity-${i}`).stepUp();
-      console.log(document.querySelector(`.num-${i}`).value)
 
-
-      // document.querySelector(`#price-${i}`).innerHTML =
-      //   price * document.querySelector(`#quantity-${i}`).value;
-      // if (document.querySelector(`#quantity-${i}`).value == 10) {
-      //   document.querySelector(`#up-btn-${i}`).disabled = true;
-      // }
-      // if (document.querySelector(`#down-btn-${i}`).disabled == true) {
-      //   document.querySelector(`#down-btn-${i}`).disabled = false;
-      // }
-      // if (document.querySelector(`#quantity-${i}`).value <= 10) {
-        // this.totalPrice[i] += parseFloat(oldPrice);
-        // this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
-        // this.orderData.price = this.shipping + this.subtotal;
-      // }
-
-      // AGGIUNGI ZERO ALLA FINE
-      // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
-      //   document.querySelector(`#price-${i}`).innerHTML += "0";
-      // } else document.querySelector(`#price-${i}`).innerHTML += ".00";
     },
 
     QuantityDown(i) {
-      // console.log(this.quantities)
 
-      // let oldPrice = price;
-      // CALCOLO QUANTITA' / PREZZO
       document.querySelector(`#quantity-${i}`).stepDown();
-      console.log(document.querySelector(`.num-${i}`).value)
-
-
-      // if (document.querySelector(`#up-btn-${i}`).disabled == true) {
-      //   document.querySelector(`#up-btn-${i}`).disabled = false;
-      // }
-      // if (document.querySelector(`#quantity-${i}`).value < 2) {
-      //   document.querySelector(`#down-btn-${i}`).disabled = true;
-      // }
-      // if (parseFloat(document.querySelector(`#price-${i}`).innerHTML) > price) {
-      //   document.querySelector(`#quantity-${i}`).stepDown();
-      //   document.querySelector(`#price-${i}`).innerHTML -= price;
-      // } else {
-      //   document.querySelector(`#price-${i}`).innerHTML = price;
-      // }
-      // if (this.totalPrice[i] > oldPrice) {
-        // this.totalPrice[i] -= parseFloat(oldPrice);
-        // this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
-        // this.orderData.price = this.shipping + this.subtotal;
-      // }
-
-      // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
-      //   document.querySelector(`#price-${i}`).innerHTML += "0";
-      // } else document.querySelector(`#price-${i}`).innerHTML += ".00";
     },
 
     getQuantities() {
