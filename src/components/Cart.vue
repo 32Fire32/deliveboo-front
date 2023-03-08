@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       store,
+      quantity:[],
       cart:[],
       rest: null,
       restaurant_slug: null,
@@ -37,12 +38,23 @@ export default {
     this.restaurant_slug = JSON.parse(localStorage.getItem("slug"));
     this.rest = JSON.parse(localStorage.getItem("price_shipping"));
     this.cart = store.userCart;
-    console.log(store.userCart);
-    console.log(this.cart);
+    // console.log(this.cart.quantities);
+
+    this.cart.quantities.forEach((element, i) => {
+      this.quantity.push(parseFloat(this.cart.quantities[i]))
+      console.log(this.quantity)      
+    });
 
   },
   mounted() {
+    // stampa quantità
+    this.cart.dish.forEach((element, i) => {
+      // console.log(element.price, this.cart.quantities)
+      document.querySelector(`#price-${i}`).innerHTML =
+      element.price * parseFloat(this.cart.quantities[i]);      
+    });
 
+    //card
     if(this.cart){
       document.getElementById('card-number').addEventListener('input', function (e) {
       e.target.value = e.target.value.replace(/[^\dA-Z]/g, '').replace(/(.{4})/g, '$1 ').trim();
@@ -113,66 +125,61 @@ export default {
         document.querySelector('.btn-close').click();
         this.$router.push("/ordine");
     },
-    showlog() {
-      for (let i = 0; i < store.userCart.dish.length; i++) {
-        this.cartItems.dishesQuantity.push(
-          parseFloat(document.querySelector(`#quantity-${i}`).value)
-        );
-      }
-      console.log(this.cartItems.dishesQuantity);
-    },
 
     pushPriceInArray(item) {
       this.orderTotal.push(item);
     },
  
     QuantityUp(i, price) {
-      let oldPrice = price;
       // CALCOLO QUANTITA' / PREZZO
-      document.querySelector(`#quantity-${i}`).stepUp();
-      document.querySelector(`#price-${i}`).innerHTML =
-        price * document.querySelector(`#quantity-${i}`).value;
-      if (document.querySelector(`#quantity-${i}`).value == 10) {
-        document.querySelector(`#up-btn-${i}`).disabled = true;
+      // document.querySelector(`#quantity-${i}`).stepUp();
+      if(this.quantity[i] >= 0 && this.quantity[i] < 10){
+        this.quantity[i] += 1;
       }
-      if (document.querySelector(`#down-btn-${i}`).disabled == true) {
-        document.querySelector(`#down-btn-${i}`).disabled = false;
-      }
-      if (document.querySelector(`#quantity-${i}`).value <= 10) {
-        this.totalPrice[i] += parseFloat(oldPrice);
-        this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
-        this.orderData.price = this.shipping + this.subtotal;
-      }
+      
+      // if (document.querySelector(`#quantity-${i}`).value <= 10) {
+
+      // this.totalPrice.push(parseFloat(price));
+      // this.totalPrice[i] += parseFloat(price)
+      // this.totalPrice.push(price * document.querySelector(`#quantity-${i}`).value);
+      // console.log(this.totalPrice)
+      // this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
+      // this.orderData.price = this.shipping + this.subtotal;
+
+      // }
 
       // AGGIUNGI ZERO ALLA FINE
-      if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
-        document.querySelector(`#price-${i}`).innerHTML += "0";
-      } else document.querySelector(`#price-${i}`).innerHTML += ".00";
+      // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
+      //   document.querySelector(`#price-${i}`).innerHTML += "0";
+      // } else document.querySelector(`#price-${i}`).innerHTML += ".00";
     },
+    
     QuantityDown(i, price) {
-      let oldPrice = price;
-      // CALCOLO QUANTITA' / PREZZO
-      if (document.querySelector(`#up-btn-${i}`).disabled == true) {
-        document.querySelector(`#up-btn-${i}`).disabled = false;
+      // document.querySelector(`#quantity-${i}`).stepDown();
+      if(this.quantity[i] > 0 && this.quantity[i] <= 10){
+        this.quantity[i] -= 1;
       }
-      if (document.querySelector(`#quantity-${i}`).value < 3) {
-        document.querySelector(`#down-btn-${i}`).disabled = true;
-      }
-      if (parseFloat(document.querySelector(`#price-${i}`).innerHTML) > price) {
-        document.querySelector(`#quantity-${i}`).stepDown();
-        document.querySelector(`#price-${i}`).innerHTML -= price;
-      } else {
-        document.querySelector(`#price-${i}`).innerHTML = price;
-      }
-      if (this.totalPrice[i] > oldPrice) {
-        this.totalPrice[i] -= parseFloat(oldPrice);
-        this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
-        this.orderData.price = this.shipping + this.subtotal;
-      }
+      
 
-      if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
-        document.querySelector(`#price-${i}`).innerHTML += "0";
-      } else document.querySelector(`#price-${i}`).innerHTML += ".00";
+      // CALCOLO QUANTITA' / PREZZO
+
+      // if (parseFloat(document.querySelector(`#price-${i}`).innerHTML) > price) {
+      //   document.querySelector(`#quantity-${i}`).stepDown();
+      //   document.querySelector(`#price-${i}`).innerHTML -= price;
+      // } else {
+      //   document.querySelector(`#price-${i}`).innerHTML = price;
+      // }
+      // if (this.totalPrice[i] > price) {
+      //   this.totalPrice[i] -= parseFloat(price);
+      // console.log(this.totalPrice)
+
+      //   this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
+      //   this.orderData.price = this.shipping + this.subtotal;
+      // }
+
+      // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
+      //   document.querySelector(`#price-${i}`).innerHTML += "0";
+      // } else document.querySelector(`#price-${i}`).innerHTML += ".00";
     },
 
     getQuantities() {
@@ -191,9 +198,7 @@ export default {
     clearQuantities() {
       this.cartItems.dishesQuantity = [];
     },
-    addZeroToPrice() {
-
-    },
+    
     deleteCart(i) {
       this.cart.dish.splice(i, 1);
 
@@ -266,12 +271,12 @@ export default {
                   <!-- QUANTITA' -->
                   <div class="d-flex mb-4" style="max-width: 300px">
                     <button class="btn btn-quantity color-white px-3 me-2 mb-5" :id="'down-btn-' + index"
-                      @click="QuantityDown(index, item.price)" disabled>
+                      @click="QuantityDown(index, item.price)">
                       -
                     </button>
 
                     <div class="form-outline">
-                      <input :id="'quantity-' + index" required min="1" max="11" :name="'quantity-' + index" value="1"
+                      <input :id="'quantity-' + index" required min="1" max="10" :name="'quantity-' + index" v-model="quantity[index]"
                         type="number" class="form-control" />
                       <label class="form-label" for="form1">Quantità</label>
                     </div>

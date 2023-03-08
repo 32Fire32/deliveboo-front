@@ -21,8 +21,6 @@
           </div>
         </div>
         <div class="col-lg-6 dish">
-          <!-- form -->
-          <form @submit.prevent="saveData()">
             <h5>I NOSTRI PIATTI:</h5>
 
             <div class="d-flex flex-wrap">
@@ -38,11 +36,30 @@
                     v-model="order.dish"
                   />
                   <div
-                    :style="`background-image: url(${dish.img});background-color: black; background-size:cover; background-position:center; background-repeat: no-repeat;  background-color: white;`"
+                    :style="`background-image: url(${dish.img}); background-size:cover; background-position:center; background-repeat: no-repeat`"
                   >
 
                   </div>
+                  
                 </article>
+                <div class="d-flex mb-4 d-none" :id="'btn-quantities-' + index" style="max-width: 300px">
+                    <button class="btn btn-quantity color-white px-3 me-2 mb-5" :id="'down-btn-' + index"
+                      @click="QuantityDown(index)">
+                      -
+                    </button>
+
+                    <div class="form-outline">
+                      <input :id="'quantity-' + index" required min="1" max="10" :name="'quantity-' + index"
+                        type="number" class="form-control" :class="`num-${index}`" value="1"/>
+                      <label class="form-label" :for="'quantity-' + id">Quantità</label>
+                    </div>
+
+                    <button class="btn btn-quantity color-white px-3 ms-2 mb-5" :id="'up-btn-' + index"
+                      @click="QuantityUp(index)">
+                      +
+                    </button>
+                  </div>
+
                 <div class="d-flex flex-column">
                   <label :for="'check-' + index">{{ dish.name }}</label>
                   <label :for="'check-' + index">{{ dish.price }}€</label>
@@ -51,7 +68,7 @@
             </div>
 
             <div class="addcart">
-              <button class="text-white btn rounded-3 m-4" type="submit">
+              <button class="text-white btn rounded-3 m-4" type="submit" @click="saveData()">
                 Aggiungi al carrello
               </button>
             </div>
@@ -109,7 +126,6 @@
             <div id="select" class="d-none">
               <p>Seleziona almeno un piatto!</p>
             </div>
-          </form>
         </div>
       </div>
     </div>
@@ -126,18 +142,57 @@ export default {
       components: {
         store,
       },
+      // subtotal: 0,
       restaurant: null,
       order: {
         dish: [],
+        quantities: [],
       },
     };
   },
+  created() {
+    axios
+      .get(`http://localhost:8000/api/restaurants/${this.$route.params.slug}`)
+      .then((response) => {
+        this.restaurant = response.data;
+        // console.log(this.restaurant)
+        
+      })
+      .catch((err) => {
+        console.log(err);
+        this.$router.push({ name: "page-404" });
+        // if (err.response.status === 404) {
+        // }
+      });
+
+    store.userCart = JSON.parse(localStorage.getItem("my_data"));
+      // console.log(this.restaurant)
+    this.restaurant_slug = JSON.parse(localStorage.getItem("slug"));
+    this.rest = JSON.parse(localStorage.getItem("price_shipping"));
+
+    
+  },
+  // computed: {
+  //   dishesQuantity() {
+  //     return this.order.dish.map(dish => this.order.quantities[dish.id])
+  //     for (let i = 0; i < this.order.dish.length; i++) {
+  //         this.order.quantities.push(parseFloat(document.querySelector(`#quantity-${i}`)).value);
+  //       }
+  //   }
+  // },
+  // mounted(){
+  //   for (let i = 0; i < this.order.dish.length; i++) {
+  //         this.quantities.push(parseFloat(document.querySelector(`#quantity-${i}`)).value);
+  //       }
+  // },
   methods: {
-    selectDish(index) {
+    selectDish(i) {
+      document.querySelector(`#btn-quantities-${i}`).classList.toggle('d-none');
       document
-        .querySelector(`#check-${index}`)
+        .querySelector(`#check-${i}`)
         .parentElement.classList.toggle("selected");
     },
+
     overWriteCart() {
       localStorage.removeItem("my_data");
 
@@ -156,6 +211,7 @@ export default {
     },
 
     saveData() {
+      this.getQuantities();
       if (store.userCart) {
         document.getElementById("cart").classList.remove("d-none");
 
@@ -247,25 +303,81 @@ export default {
         }
       }
     },
-  },
-  created() {
-    axios
-      .get(`http://localhost:8000/api/restaurants/${this.$route.params.slug}`)
-      .then((response) => {
-        this.restaurant = response.data;
-        // console.log(this.restaurant)
-      })
-      .catch((err) => {
-        console.log(err);
-        this.$router.push({ name: "page-404" });
-        // if (err.response.status === 404) {
-        // }
-      });
+    QuantityUp(i) {
+      // console.log(this.quantities)
 
-    store.userCart = JSON.parse(localStorage.getItem("my_data"));
+      // let oldPrice = price;
+      // CALCOLO QUANTITA' / PREZZO
+      document.querySelector(`#quantity-${i}`).stepUp();
+      console.log(document.querySelector(`.num-${i}`).value)
 
-    this.restaurant_slug = JSON.parse(localStorage.getItem("slug"));
-    this.rest = JSON.parse(localStorage.getItem("price_shipping"));
+
+      // document.querySelector(`#price-${i}`).innerHTML =
+      //   price * document.querySelector(`#quantity-${i}`).value;
+      // if (document.querySelector(`#quantity-${i}`).value == 10) {
+      //   document.querySelector(`#up-btn-${i}`).disabled = true;
+      // }
+      // if (document.querySelector(`#down-btn-${i}`).disabled == true) {
+      //   document.querySelector(`#down-btn-${i}`).disabled = false;
+      // }
+      // if (document.querySelector(`#quantity-${i}`).value <= 10) {
+        // this.totalPrice[i] += parseFloat(oldPrice);
+        // this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
+        // this.orderData.price = this.shipping + this.subtotal;
+      // }
+
+      // AGGIUNGI ZERO ALLA FINE
+      // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
+      //   document.querySelector(`#price-${i}`).innerHTML += "0";
+      // } else document.querySelector(`#price-${i}`).innerHTML += ".00";
+    },
+
+    QuantityDown(i) {
+      // console.log(this.quantities)
+
+      // let oldPrice = price;
+      // CALCOLO QUANTITA' / PREZZO
+      document.querySelector(`#quantity-${i}`).stepDown();
+      console.log(document.querySelector(`.num-${i}`).value)
+
+
+      // if (document.querySelector(`#up-btn-${i}`).disabled == true) {
+      //   document.querySelector(`#up-btn-${i}`).disabled = false;
+      // }
+      // if (document.querySelector(`#quantity-${i}`).value < 2) {
+      //   document.querySelector(`#down-btn-${i}`).disabled = true;
+      // }
+      // if (parseFloat(document.querySelector(`#price-${i}`).innerHTML) > price) {
+      //   document.querySelector(`#quantity-${i}`).stepDown();
+      //   document.querySelector(`#price-${i}`).innerHTML -= price;
+      // } else {
+      //   document.querySelector(`#price-${i}`).innerHTML = price;
+      // }
+      // if (this.totalPrice[i] > oldPrice) {
+        // this.totalPrice[i] -= parseFloat(oldPrice);
+        // this.subtotal = this.totalPrice.reduce((pv, cv) => pv + cv, 0);
+        // this.orderData.price = this.shipping + this.subtotal;
+      // }
+
+      // if (document.querySelector(`#price-${i}`).innerHTML.includes(".")) {
+      //   document.querySelector(`#price-${i}`).innerHTML += "0";
+      // } else document.querySelector(`#price-${i}`).innerHTML += ".00";
+    },
+
+    getQuantities() {
+      // console.log(this.restaurant.dishes)
+      if (this.order.quantities.length > 0) {
+        this.order.quantities = [];
+      } else {
+        this.order.dish.forEach((dish, i) => {
+          this.order.quantities.push(
+            parseFloat(document.querySelector(`.num-${i}`).value)
+            );
+          });
+          console.log(this.order.quantities)
+          console.log(this.order)
+        }
+    },
   },
 };
 </script>
@@ -336,6 +448,10 @@ article {
   font-size: 17px;
   text-align: center;
   transition: all 0.1s;
+  .btn-quantity {
+    background-color: rgba(195, 34, 34);
+    color: white;
+}
 }
 
 article div {
